@@ -61,7 +61,7 @@ def main(stdscr):
         min_w = max(WIDTH * 2 + 4, 75)
         min_h = HEIGHT + 9
         if term_height < min_h or term_width < min_w:
-            stdscr.addstr(0, 0, f"Пожалуйста, сделайте окно терминала больше (мин: {min_w}x{min_h})")
+            stdscr.addstr(0, 0, f"Please make the terminal window larger (mines: {min_w}x{min_h})")
             stdscr.refresh()
             key = stdscr.getch()
             if key in [ord('q'), ord('Q')]:
