@@ -1,0 +1,48 @@
+name: Build DEB Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-node-version: '3.12'
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby-full build-essential
+          sudo gem install fpm
+
+      - name: Build Wheel
+        run: |
+          pip install build hatchling
+          python3 -m build --wheel
+
+      - name: Convert Wheel to DEB via FPM
+        run: |
+          fpm -s python -t deb \
+            --name "termsweeper" \
+            --version "1.0.8" \
+            --architecture "all" \
+            --description "Just a game-minesweeper on the Linux terminal." \
+            --maintainer "nikitastrelom <l35gamershaman@gmail.com>" \
+            --python-bin python3 \
+            --python-package-name-prefix "" \
+            dist/*.whl
+
+      - name: Upload DEB to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: termsweeper_*.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
